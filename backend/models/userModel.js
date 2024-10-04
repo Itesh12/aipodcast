@@ -1,0 +1,86 @@
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+
+const userSchema = new mongoose.Schema(
+  {
+    userName: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    interests: {
+      type: [String], // Array of strings for interests
+      required: true,
+      default: [], // Default to an empty array
+    },
+    notificationsPreferences: {
+      type: Number,
+      required: true,
+      default: 0, // Default to 0 (off)
+    },
+    languagePreferences: {
+      type: [String], // Ensure this is an array of strings
+      required: false, // Change to false if not required
+    },
+    preferredCategories: {
+      type: [String], // Array of strings for preferred categories
+      default: [], // Default to an empty array
+    },
+    profilePicture: {
+      type: String,
+      default: "", // Default value for profile picture
+    },
+    bio: {
+      type: String,
+      default: "", // Default value for bio
+    },
+    websiteLinks: {
+      type: [String],
+      default: [], // Default to an empty array
+    },
+    favoritePodcasts: {
+      type: [String],
+      default: [], // Default to an empty array
+    },
+    subscribedPodcasts: {
+      type: [String],
+      default: [], // Default to an empty array
+    },
+    createdPodcasts: {
+      type: [String],
+      default: [], // Default to an empty array
+    },
+    totalListeningTime: {
+      type: String,
+      default: "0hr 0min", // Default value for total listening time
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+const User = mongoose.model("User", userSchema);
+export default User;
