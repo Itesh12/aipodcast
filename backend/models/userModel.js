@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import Playlist from "../models/playlistModel.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -69,6 +70,7 @@ const userSchema = new mongoose.Schema(
       type: [String], // Track user search history
       default: [], // Default to an empty array
     },
+    playlists: [{ type: mongoose.Schema.Types.ObjectId, ref: "Playlist" }], // Reference to Playlist model
     token: {
       type: String,
       default: "", // Token to store after registration

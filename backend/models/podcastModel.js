@@ -135,13 +135,18 @@ const podcastSchema = new mongoose.Schema(
         type: [String],
         default: [],
       },
-      language: {
-        type: String,
-      },
+      language: [String],
+      duration: String, // e.g., "1hr 30min"
     },
     coverPhoto: {
       type: String,
     },
+    episodes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Episode",
+      },
+    ],
     listenCount: {
       type: Number,
       default: 0,

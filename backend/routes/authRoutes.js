@@ -1,52 +1,25 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
-import upload from "../config/multerConfig.js";
-import multer from "multer";
-
+import upload from "../config/multerConfig.js"; // Adjust path accordingly
 import {
-  createEpisode,
-  updateEpisode,
-  deleteEpisode,
-} from "../controllers/episodeController.js";
+  registerUser,
+  authUser,
+  getUserProfile,
+  updateUserProfile,
+  deleteUser,
+  changePassword,
+  initiatePasswordReset,
+} from "../controllers/authController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.put(
-  "/:episodeId",
-  protect,
-  (req, res, next) => {
-    upload(req, res, (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ message: "Multer Error", error: err });
-      } else if (err) {
-        return res
-          .status(500)
-          .json({ message: "Unknown Upload Error", error: err });
-      }
-      next();
-    });
-  },
-  updateEpisode
-);
+router.post("/register", registerUser);
+router.post("/login", authUser);
+router.get("/profile", protect, getUserProfile);
+router.post("/reset-password", initiatePasswordReset); // Route for initiating a password reset
+router.put("/change-password", protect, changePassword); // Route for changing the password
+router.put("/profile", protect, upload, updateUserProfile);
 
-router.delete("/:episodeId", protect, deleteEpisode);
-
-router.post(
-  "/:podcastId/create-episode",
-  protect,
-  (req, res, next) => {
-    upload(req, res, (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ message: "Multer Error", error: err });
-      } else if (err) {
-        return res
-          .status(500)
-          .json({ message: "Unknown Upload Error", error: err });
-      }
-      next();
-    });
-  },
-  createEpisode
-);
+router.delete("/profile", protect, deleteUser);
 
 export default router;

@@ -1,6 +1,6 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware.js";
-import upload from "../config/multerConfig.js"; // Adjust path accordingly
+import upload from "../config/multerConfig.js";
 import multer from "multer";
 
 import {
@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.put(
   "/:episodeId",
-  protect, // Authentication middleware
+  protect,
   (req, res, next) => {
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
@@ -23,17 +23,17 @@ router.put(
           .status(500)
           .json({ message: "Unknown Upload Error", error: err });
       }
-      next(); // Proceed to updateEpisode controller
+      next();
     });
   },
   updateEpisode
 );
 
-router.delete("/:episodeId", protect, deleteEpisode); // Delete an episode
-// Episode create routes
+router.delete("/:episodeId", protect, deleteEpisode);
+
 router.post(
   "/:podcastId/create-episode",
-  protect, // Authentication middleware
+  protect,
   (req, res, next) => {
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
@@ -43,7 +43,7 @@ router.post(
           .status(500)
           .json({ message: "Unknown Upload Error", error: err });
       }
-      next(); // Proceed to createEpisode controller
+      next();
     });
   },
   createEpisode
