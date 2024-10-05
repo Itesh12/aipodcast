@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema(
       newEpisodes: { type: Boolean, default: true }, // Notify for new episodes
       podcastUpdates: { type: Boolean, default: true }, // Notify for podcast updates
     },
+    totalListeningTimeInSec: {
+      type: Number,
+      default: 0, // Default value set to 0
+    },
     languagePreferences: {
       type: [String], // Ensure this is an array of strings
       required: false, // Change to false if not required

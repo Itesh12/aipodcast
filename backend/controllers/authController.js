@@ -4,6 +4,15 @@ import { generateToken } from "../utils/generateToken.js"; // Assuming you have 
 
 import { body, validationResult } from "express-validator";
 
+// Utility function to format total listening time
+const formatListeningTime = (totalSeconds) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${hours}hr ${minutes}min ${seconds}s`;
+};
+
 export const registerUser = async (req, res) => {
   // Validate input
   await body("email")
@@ -237,16 +246,50 @@ export const updateNotificationPreferences = async (req, res) => {
         : user.notificationsPreferences.podcastUpdates;
 
     await user.save();
-    res
-      .status(200)
-      .json({
-        message: "Notification preferences updated",
-        preferences: user.notificationsPreferences,
-      });
+    res.status(200).json({
+      message: "Notification preferences updated",
+      preferences: user.notificationsPreferences,
+    });
   } catch (error) {
     console.error("Error updating notification preferences:", error);
     res
       .status(500)
       .json({ message: "Error updating notification preferences", error });
+  }
+};
+
+// Update listening time for the user
+export const updateListeningTime = async (req, res) => {
+  const userId = req.user._id;
+  const { episodeDuration } = req.body; // Duration in seconds
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Ensure episodeDuration is a number
+    const durationInSeconds = Number(episodeDuration); // Ensure it's a number
+    if (isNaN(durationInSeconds)) {
+      return res.status(400).json({ message: "Invalid episode duration" });
+    }
+
+    // Update totalListeningTime correctly
+    user.totalListeningTimeInSec += durationInSeconds; // Increment by episode duration
+
+    // Log the values to debug
+    console.log(`Before Save: ${user.totalListeningTimeInSec}`); // For debugging
+
+    await user.save(); // Ensure it's saved correctly
+
+    // Return the total listening time as a string for response
+    res.status(200).json({
+      message: "Listening time updated",
+      totalListeningTimeInSec: user.totalListeningTimeInSec.toString(), // Convert to string for response
+    });
+  } catch (error) {
+    console.error("Error updating listening time:", error);
+    res.status(500).json({ message: "Error updating listening time", error });
   }
 };

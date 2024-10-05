@@ -9,6 +9,7 @@ import {
   changePassword,
   initiatePasswordReset,
   updateNotificationPreferences,
+  updateListeningTime,
 } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -22,5 +23,6 @@ router.put("/change-password", protect, changePassword); // Route for changing t
 router.put("/profile", protect, upload, updateUserProfile);
 router.patch("/update-notifications", protect, updateNotificationPreferences); // Update notification preferences
 router.delete("/profile", protect, deleteUser);
+router.post("/update-listening-time", protect, updateListeningTime);
 
 export default router;
