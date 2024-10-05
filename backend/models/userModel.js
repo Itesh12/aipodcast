@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
       default: [], // Default to an empty array
     },
     favoritePodcasts: {
-      type: [String],
+      type: [String], // Corrected: Declared once
       default: [], // Default to an empty array
     },
     subscribedPodcasts: {
@@ -65,12 +65,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "0hr 0min", // Default value for total listening time
     },
+    searchHistory: {
+      type: [String], // Track user search history
+      default: [], // Default to an empty array
+    },
+    token: {
+      type: String,
+      default: "", // Token to store after registration
+    },
   },
   {
     timestamps: true,
   }
 );
 
+// Hash password before saving user
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);
@@ -78,6 +87,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Method to compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

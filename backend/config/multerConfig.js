@@ -29,6 +29,6 @@ const upload = multer({
       cb("Error: Images Only!");
     }
   },
-}).single("profilePicture"); // The field name for the profile picture in FormData
+}).single("image"); // The field name for the profile picture in FormData
 
 export default upload;

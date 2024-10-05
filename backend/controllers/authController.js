@@ -1,10 +1,6 @@
 import User from "../models/userModel.js";
-import jwt from "jsonwebtoken";
 import { handleError } from "../utils/errorHandler.js";
-
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-};
+import { generateToken } from "../utils/generateToken.js"; // Assuming you have a utility function for token generation
 
 import { body, validationResult } from "express-validator";
 
@@ -45,16 +41,21 @@ export const registerUser = async (req, res) => {
       userName,
       email,
       password,
-      interests: [],
-    }); // Initialize interests as an empty array
+      interests: [], // Initialize interests as an empty array
+    });
+
+    // Generate and save token
+    const token = generateToken(user._id);
+    user.token = token; // Save token to the user record
+    await user.save(); // Save updated user
 
     res.status(201).json({
       _id: user._id,
       email: user.email,
-      token: generateToken(user._id),
+      token: token, // Return the token to the client
     });
   } catch (error) {
-    handleError(res, error);
+    res.status(500).json({ message: "Error registering user", error });
   }
 };
 
