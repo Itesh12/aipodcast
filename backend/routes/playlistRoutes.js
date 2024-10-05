@@ -4,6 +4,8 @@ import {
   createPlaylist,
   updatePlaylist,
   deletePlaylist,
+  addEpisodeToPlaylist,
+  removeEpisodeFromPlaylist,
 } from "../controllers/playlistController.js";
 
 const router = express.Router();
@@ -16,5 +18,8 @@ router.put("/update-playlist/:playlistId", protect, updatePlaylist);
 
 // Delete a playlist
 router.delete("/delete-playlist/:playlistId", protect, deletePlaylist);
+
+router.post("/add-episode", protect, addEpisodeToPlaylist); // Add episode to playlist
+router.delete("/remove-episode", protect, removeEpisodeFromPlaylist); // Remove episode from playlist
 
 export default router;

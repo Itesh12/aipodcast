@@ -8,6 +8,7 @@ import {
   deleteUser,
   changePassword,
   initiatePasswordReset,
+  updateNotificationPreferences,
 } from "../controllers/authController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -19,7 +20,7 @@ router.get("/profile", protect, getUserProfile);
 router.post("/reset-password", initiatePasswordReset); // Route for initiating a password reset
 router.put("/change-password", protect, changePassword); // Route for changing the password
 router.put("/profile", protect, upload, updateUserProfile);
-
+router.patch("/update-notifications", protect, updateNotificationPreferences); // Update notification preferences
 router.delete("/profile", protect, deleteUser);
 
 export default router;

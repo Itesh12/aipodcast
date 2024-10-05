@@ -5,6 +5,7 @@ import userRoutes from "./routes/authRoutes.js";
 import podcastRoutes from "./routes/podcastRoutes.js";
 import episodeRoutes from "./routes/episodeRoutes.js";
 import playlistRoutes from "./routes/playlistRoutes.js";
+import bookmarkRoutes from "./routes/bookmarkRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -30,6 +31,9 @@ app.use("/api/episodes", episodeRoutes);
 
 //Playlist Routes
 app.use("/api/playlists", playlistRoutes);
+
+//Bookmarks Routes
+app.use("/api/bookmarks", bookmarkRoutes);
 
 // Serve static files from the 'uploads' directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

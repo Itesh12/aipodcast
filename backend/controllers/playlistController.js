@@ -91,3 +91,70 @@ export const deletePlaylist = async (req, res) => {
     res.status(500).json({ message: "Error deleting playlist", error });
   }
 };
+
+// Add an episode to a playlist and update the user model
+export const addEpisodeToPlaylist = async (req, res) => {
+  const { playlistId, episodeId } = req.body;
+  const userId = req.user._id;
+
+  try {
+    // Find the playlist by ID and ensure the playlist belongs to the user
+    const playlist = await Playlist.findOne({ _id: playlistId, user: userId });
+
+    if (!playlist) {
+      return res
+        .status(404)
+        .json({ message: "Playlist not found or does not belong to the user" });
+    }
+
+    // Check if the episode is already in the playlist
+    if (!playlist.episodes.includes(episodeId)) {
+      playlist.episodes.push(episodeId); // Add episode to playlist
+      await playlist.save(); // Save the updated playlist data
+
+      return res
+        .status(200)
+        .json({ message: "Episode added to playlist", playlist });
+    }
+
+    res.status(400).json({ message: "Episode already in playlist" });
+  } catch (error) {
+    console.error("Error adding episode to playlist:", error);
+    res
+      .status(500)
+      .json({ message: "Error adding episode to playlist", error });
+  }
+};
+
+// Remove an episode from a playlist and update the user model
+export const removeEpisodeFromPlaylist = async (req, res) => {
+  const { playlistId, episodeId } = req.body;
+  const userId = req.user._id;
+
+  try {
+    // Find the playlist by ID and ensure it belongs to the user
+    const playlist = await Playlist.findOne({ _id: playlistId, user: userId });
+
+    if (!playlist) {
+      return res
+        .status(404)
+        .json({ message: "Playlist not found or does not belong to the user" });
+    }
+
+    // Filter out the episode from the playlist
+    playlist.episodes = playlist.episodes.filter(
+      (episode) => episode.toString() !== episodeId
+    );
+
+    await playlist.save(); // Save the updated playlist data
+
+    res
+      .status(200)
+      .json({ message: "Episode removed from playlist", playlist });
+  } catch (error) {
+    console.error("Error removing episode from playlist:", error);
+    res
+      .status(500)
+      .json({ message: "Error removing episode from playlist", error });
+  }
+};

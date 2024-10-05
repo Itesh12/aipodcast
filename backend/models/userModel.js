@@ -26,9 +26,8 @@ const userSchema = new mongoose.Schema(
       default: [], // Default to an empty array
     },
     notificationsPreferences: {
-      type: Number,
-      required: true,
-      default: 0, // Default to 0 (off)
+      newEpisodes: { type: Boolean, default: true }, // Notify for new episodes
+      podcastUpdates: { type: Boolean, default: true }, // Notify for podcast updates
     },
     languagePreferences: {
       type: [String], // Ensure this is an array of strings
@@ -54,6 +53,12 @@ const userSchema = new mongoose.Schema(
       type: [String], // Corrected: Declared once
       default: [], // Default to an empty array
     },
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Podcast", // Assuming Podcast is the model for podcasts
+      },
+    ],
     subscribedPodcasts: {
       type: [String],
       default: [], // Default to an empty array
