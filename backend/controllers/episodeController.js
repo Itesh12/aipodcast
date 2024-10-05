@@ -148,3 +148,67 @@ export const deleteEpisode = async (req, res) => {
     res.status(400).json({ message: "Error deleting episode", error });
   }
 };
+
+// Controller function to mark an episode as played
+export const markEpisodeAsPlayed = async (req, res) => {
+  const { episodeId } = req.body; // Assuming the episode ID is sent in the request body
+  const userId = req.user._id;
+
+  try {
+    const episode = await Episode.findById(episodeId);
+    if (!episode) {
+      return res.status(404).json({ message: "Episode not found" });
+    }
+
+    // Check if the episode is already marked as played
+    if (!episode.playedBy.includes(userId)) {
+      episode.playedBy.push(userId); // Mark the episode as played by the user
+      await episode.save();
+      return res
+        .status(200)
+        .json({ message: "Episode marked as played", episode });
+    }
+
+    res.status(400).json({ message: "Episode already marked as played" });
+  } catch (error) {
+    console.error("Error marking episode as played:", error);
+    res.status(500).json({ message: "Error marking episode as played", error });
+  }
+};
+
+// Controller function to unmark an episode as played
+export const unmarkEpisodeAsPlayed = async (req, res) => {
+  const { episodeId } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const episode = await Episode.findById(episodeId);
+    if (!episode) {
+      return res.status(404).json({ message: "Episode not found" });
+    }
+
+    console.log("Episode found:", episode);
+    console.log("User ID:", userId);
+    console.log("Played By:", episode.playedBy);
+
+    // Check if the episode is marked as played by the user
+    if (episode.playedBy.includes(userId)) {
+      console.log("User is in playedBy array. Removing...");
+
+      episode.playedBy = episode.playedBy.filter(
+        (id) => id.toString() !== userId.toString() // Ensure comparison is done as strings
+      ); // Unmark the episode as played
+      await episode.save();
+      return res
+        .status(200)
+        .json({ message: "Episode unmarked as played", episode });
+    }
+
+    res.status(400).json({ message: "Episode is not marked as played" });
+  } catch (error) {
+    console.error("Error unmarking episode as played:", error);
+    res
+      .status(500)
+      .json({ message: "Error unmarking episode as played", error });
+  }
+};

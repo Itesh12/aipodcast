@@ -46,3 +46,21 @@ export const removeBookmark = async (req, res) => {
     res.status(500).json({ message: "Error removing bookmark", error });
   }
 };
+
+// Get all bookmarked podcasts
+export const getBookmarkedPodcasts = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).populate("bookmarks");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ bookmarks: user.bookmarks });
+  } catch (error) {
+    console.error("Error fetching bookmarks:", error);
+    res.status(500).json({ message: "Error fetching bookmarks", error });
+  }
+};

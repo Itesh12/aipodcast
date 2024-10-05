@@ -29,6 +29,7 @@ const episodeSchema = new mongoose.Schema(
       ref: "Podcast",
       required: true,
     },
+    playedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Track users who marked the episode as played
     createdAt: {
       type: Date,
       default: Date.now,

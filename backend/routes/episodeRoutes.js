@@ -7,6 +7,8 @@ import {
   createEpisode,
   updateEpisode,
   deleteEpisode,
+  markEpisodeAsPlayed,
+  unmarkEpisodeAsPlayed,
 } from "../controllers/episodeController.js";
 
 const router = express.Router();
@@ -48,5 +50,8 @@ router.post(
   },
   createEpisode
 );
+
+router.post("/markPlayed", protect, markEpisodeAsPlayed);
+router.post("/unmarkPlayed", protect, unmarkEpisodeAsPlayed);
 
 export default router;
