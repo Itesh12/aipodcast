@@ -12,6 +12,8 @@ import {
   commentOnPodcast,
   sharePodcast,
   likePodcast,
+  getPodcastStats,
+  listenToEpisode,
 } from "../controllers/podcastController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -49,5 +51,11 @@ router.delete("/:id", protect, deletePodcast);
 
 // Get related podcasts based on user ID
 router.get("/:id/related", protect, getRelatedPodcasts);
+
+// Get podcast stats
+router.get("/get-podcast-stats/:id", protect, getPodcastStats);
+
+// Update podcast stats
+router.post("/update-podcast-stats", protect, listenToEpisode);
 
 export default router;

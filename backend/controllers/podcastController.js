@@ -409,3 +409,59 @@ export const commentOnPodcast = async (req, res) => {
     res.status(500).json({ message: "Error adding comment", error });
   }
 };
+
+// Get podcast stats
+export const getPodcastStats = async (req, res) => {
+  const podcastId = req.params.id; // Correctly access the ID from params
+
+  try {
+    const podcast = await Podcast.findById(podcastId);
+    if (!podcast) {
+      return res.status(404).json({ message: "Podcast not found" });
+    }
+
+    res.status(200).json({
+      message: "Podcast stats retrieved",
+      totalListens: podcast.totalListens,
+      episodeStats: podcast.episodeStats,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving stats", error });
+  }
+};
+
+// Function to handle episode listen event
+export const listenToEpisode = async (req, res) => {
+  const { podcastId, episodeId } = req.body;
+
+  try {
+    // Update the total listens for the podcast
+    const podcast = await Podcast.findById(podcastId);
+    if (!podcast) {
+      return res.status(404).json({ message: "Podcast not found" });
+    }
+
+    // Increment the total listens
+    podcast.totalListens += 1;
+
+    // Update the episode stats
+    const episodeStat = podcast.episodeStats.find(
+      (stat) => stat.episodeId.toString() === episodeId
+    );
+
+    if (episodeStat) {
+      // If the episode already exists in the stats, increment its listens
+      episodeStat.listens += 1;
+    } else {
+      // If it doesn't exist, create a new entry for the episode
+      podcast.episodeStats.push({ episodeId, listens: 1 });
+    }
+
+    // Save the updated podcast
+    await podcast.save();
+
+    res.status(200).json({ message: "Listen recorded", podcast });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating stats", error });
+  }
+};
