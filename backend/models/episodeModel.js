@@ -10,12 +10,11 @@ const episodeSchema = new mongoose.Schema(
       type: String,
     },
     audioFileUrl: {
-      // Changed from audioUrl to audioFileUrl
       type: String,
       required: true,
     },
     duration: {
-      type: String, // Can store as '1hr 30min' or as minutes.
+      type: String, // Storing formatted duration like '1hr 30min'
       required: true,
     },
     guest: {
@@ -23,7 +22,7 @@ const episodeSchema = new mongoose.Schema(
     },
     coverPhoto: {
       type: String,
-      default: null, // or remove required: true to make it optional
+      default: null,
     },
     podcast: {
       type: mongoose.Schema.Types.ObjectId,
@@ -41,5 +40,4 @@ const episodeSchema = new mongoose.Schema(
 );
 
 const Episode = mongoose.model("Episode", episodeSchema);
-
 export default Episode;
