@@ -107,16 +107,18 @@ export const updatePodcast = async (req, res) => {
       return res.status(404).json({ message: "Podcast not found" });
     }
 
-    // Update cover photo if it exists
-    if (req.file) {
-      podcast.coverPhoto = `${req.protocol}://${req.get("host")}/uploads/${
-        req.file.filename
-      }`;
-      await podcast.save(); // Save the updated podcast after changing coverPhoto
+    // If a cover photo is uploaded, update it
+    if (req.files && req.files.coverPhoto) {
+      podcast.coverPhoto = `${req.protocol}://${req.get(
+        "host"
+      )}/uploads/images/${req.files.coverPhoto[0].filename}`; // Assume `coverPhoto` is the key for the cover photo file
     }
 
+    // Save the updated episode
+    const updatedEpisode = await podcast.save();
+
     // Respond with the updated podcast
-    res.json(podcast);
+    res.json(updatedEpisode);
   } catch (error) {
     console.error("Error updating podcast:", error); // Log the error for debugging
     res.status(400).json({ message: "Error updating podcast", error });

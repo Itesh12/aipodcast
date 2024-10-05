@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/authRoutes.js";
 import podcastRoutes from "./routes/podcastRoutes.js";
+import episodeRoutes from "./routes/episodeRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -22,6 +23,9 @@ app.use("/api/auth", userRoutes);
 
 //Podcast Routes
 app.use("/api/podcasts", podcastRoutes);
+
+//Episode Routes
+app.use("/api/episodes", episodeRoutes);
 
 // Serve static files from the 'uploads' directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

@@ -77,7 +77,6 @@ const podcastSchema = new mongoose.Schema({
   },
   coverPhoto: {
     type: String,
-    required: true,
     default: null, // or remove required: true to make it optional
   },
   createdAt: {
