@@ -3,6 +3,7 @@ import { handleError } from "../utils/errorHandler.js";
 import { generateToken } from "../utils/generateToken.js"; // Assuming you have a utility function for token generation
 
 import { body, validationResult } from "express-validator";
+import formatResponse from "../utils/responseFormatter.js";
 
 // Utility function to format total listening time
 const formatListeningTime = (totalSeconds) => {
@@ -30,7 +31,7 @@ export const registerUser = async (req, res) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json(formatResponse(0, { errors: errors.array() }));
   }
 
   const { userName, email, password } = req.body;
@@ -38,12 +39,16 @@ export const registerUser = async (req, res) => {
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res
+        .status(400)
+        .json(formatResponse(0, { message: "User already exists" }));
     }
 
     const userNameExists = await User.findOne({ userName });
     if (userNameExists) {
-      return res.status(400).json({ message: "Username already exists" });
+      return res
+        .status(400)
+        .json(formatResponse(0, { message: "Username already exists" }));
     }
 
     const user = await User.create({
@@ -58,13 +63,18 @@ export const registerUser = async (req, res) => {
     user.token = token; // Save token to the user record
     await user.save(); // Save updated user
 
-    res.status(201).json({
-      _id: user._id,
-      email: user.email,
-      token: token, // Return the token to the client
-    });
+    res.status(200).json(
+      formatResponse(1, "Successfully user register", {
+        _id: user._id,
+        userName: user.userName,
+        email: user.email,
+        token: token,
+      })
+    );
   } catch (error) {
-    res.status(500).json({ message: "Error registering user", error });
+    res
+      .status(500)
+      .json(formatResponse(0, { message: "Error registering user", error }));
   }
 };
 
@@ -73,13 +83,18 @@ export const authUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        email: user.email,
-        token: generateToken(user._id),
-      });
+      res.json(
+        formatResponse(1, "Success", {
+          _id: user._id,
+          userName: user.userName,
+          email: user.email,
+          token: generateToken(user._id),
+        })
+      );
     } else {
-      res.status(401).json({ message: "Invalid email or password" });
+      res
+        .status(401)
+        .json(formatResponse(0, { message: "Invalid email or password" }));
     }
   } catch (error) {
     handleError(res, error);
