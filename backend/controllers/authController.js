@@ -109,24 +109,16 @@ export const updateUserProfile = async (req, res) => {
     languagePreferences,
     preferredCategories,
     totalListeningTime,
-    interests,
+    interests, // This can be a string or an array
   } = req.body;
 
   try {
     const user = await User.findById(req.user.id);
 
     if (user) {
+      // Update basic fields
       user.userName = userName || user.userName;
-
-      // Update profile picture if it exists
-      if (req.file) {
-        user.profilePicture = `${req.protocol}://${req.get("host")}/uploads/${
-          req.file.filename
-        }`;
-      }
-
       user.bio = bio || user.bio;
-      user.interests = interests || user.interests;
       user.websiteLinks = websiteLinks || user.websiteLinks;
       user.favoritePodcasts = favoritePodcasts || user.favoritePodcasts;
       user.subscribedPodcasts = subscribedPodcasts || user.subscribedPodcasts;
@@ -135,22 +127,43 @@ export const updateUserProfile = async (req, res) => {
         notificationsPreferences !== undefined
           ? notificationsPreferences
           : user.notificationsPreferences;
-
-      // Directly assign languagePreferences
-      user.languagePreferences = languagePreferences; // Removed array check for testing
-
+      user.languagePreferences =
+        languagePreferences || user.languagePreferences;
       user.preferredCategories =
         preferredCategories || user.preferredCategories;
-
-      // Update totalListeningTime if provided
       user.totalListeningTime = totalListeningTime || user.totalListeningTime;
 
-      // Log user before saving
-      console.log("User before save:", user);
+      // Handle profile picture update
+      if (req.file) {
+        user.profilePicture = `${req.protocol}://${req.get("host")}/uploads/${
+          req.file.filename
+        }`;
+      }
+
+      // Log the user interests before update
+      console.log("User interests before update:", user.interests);
+
+      // Parse the interests if it's coming as a string
+      let parsedInterests = interests;
+      if (typeof interests === "string") {
+        try {
+          parsedInterests = JSON.parse(interests);
+        } catch (error) {
+          console.error("Error parsing interests:", error);
+        }
+      }
+
+      // If parsedInterests is now an array, append to existing interests
+      if (Array.isArray(parsedInterests)) {
+        user.interests = [...new Set([...user.interests, ...parsedInterests])]; // Merge and remove duplicates
+      }
+
+      // Log the user interests after update
+      console.log("User interests after update:", user.interests);
 
       const updatedUser = await user.save();
 
-      // Log updated user after saving
+      // Log the updated user after saving
       console.log("Updated user after save:", updatedUser);
 
       res.json({
@@ -174,7 +187,7 @@ export const updateUserProfile = async (req, res) => {
     }
   } catch (error) {
     console.error("Error saving user:", error);
-    handleError(res, error);
+    res.status(500).json({ message: "Error updating user profile", error });
   }
 };
 
