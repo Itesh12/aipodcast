@@ -74,11 +74,11 @@ export const authUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (user && (await user.matchPassword(password))) {
-      res.json({
+      res.status(200).json({
         _id: user._id,
         userName: user.userName,
         email: user.email,
-        token: generateToken(user._id),
+        token: user.token,
       });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
