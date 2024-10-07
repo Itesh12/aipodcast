@@ -109,6 +109,7 @@ export const updateUserProfile = async (req, res) => {
     languagePreferences,
     preferredCategories,
     totalListeningTime,
+    interests,
   } = req.body;
 
   try {
@@ -125,6 +126,7 @@ export const updateUserProfile = async (req, res) => {
       }
 
       user.bio = bio || user.bio;
+      user.interests = interests || user.interests;
       user.websiteLinks = websiteLinks || user.websiteLinks;
       user.favoritePodcasts = favoritePodcasts || user.favoritePodcasts;
       user.subscribedPodcasts = subscribedPodcasts || user.subscribedPodcasts;
@@ -165,6 +167,7 @@ export const updateUserProfile = async (req, res) => {
         languagePreferences: updatedUser.languagePreferences,
         preferredCategories: updatedUser.preferredCategories,
         totalListeningTime: updatedUser.totalListeningTime,
+        interests: updatedUser.interests,
       });
     } else {
       res.status(404).json({ message: "User not found" });
