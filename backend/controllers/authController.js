@@ -31,7 +31,7 @@ export const registerUser = async (req, res) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json(formatResponse(0, { errors: errors.array() }));
+    return res.status(200).json(formatResponse(0, { errors: errors.array() }));
   }
 
   const { userName, email, password } = req.body;
@@ -40,14 +40,14 @@ export const registerUser = async (req, res) => {
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res
-        .status(400)
+        .status(200)
         .json(formatResponse(0, { message: "User already exists" }));
     }
 
     const userNameExists = await User.findOne({ userName });
     if (userNameExists) {
       return res
-        .status(400)
+        .status(200)
         .json(formatResponse(0, { message: "Username already exists" }));
     }
 
@@ -287,7 +287,7 @@ export const updateListeningTime = async (req, res) => {
     // Ensure episodeDuration is a number
     const durationInSeconds = Number(episodeDuration); // Ensure it's a number
     if (isNaN(durationInSeconds)) {
-      return res.status(400).json({ message: "Invalid episode duration" });
+      return res.status(200).json({ message: "Invalid episode duration" });
     }
 
     // Update totalListeningTime correctly
