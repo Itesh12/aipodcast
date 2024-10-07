@@ -39,16 +39,12 @@ export const registerUser = async (req, res) => {
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res
-        .status(200)
-        .json(formatResponse(0, { message: "User already exists" }));
+      return res.status(200).json(formatResponse(0, "User already exists"));
     }
 
     const userNameExists = await User.findOne({ userName });
     if (userNameExists) {
-      return res
-        .status(200)
-        .json(formatResponse(0, { message: "Username already exists" }));
+      return res.status(200).json(formatResponse(0, "Username already exists"));
     }
 
     const user = await User.create({
@@ -72,9 +68,7 @@ export const registerUser = async (req, res) => {
       })
     );
   } catch (error) {
-    res
-      .status(500)
-      .json(formatResponse(0, { message: "Error registering user", error }));
+    res.status(500).json(formatResponse(0, "Error registering user", error));
   }
 };
 
@@ -92,9 +86,7 @@ export const authUser = async (req, res) => {
         })
       );
     } else {
-      res
-        .status(401)
-        .json(formatResponse(0, { message: "Invalid email or password" }));
+      res.status(200).json(formatResponse(0, "Invalid email or password"));
     }
   } catch (error) {
     handleError(res, error);
